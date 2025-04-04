@@ -8,7 +8,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+<<<<<<< HEAD
 import 'package:myskin/main.dart';
+=======
+import 'package:skinscan/main.dart';
+>>>>>>> ea92882 (Nowy projket)
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {

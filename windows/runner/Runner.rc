@@ -90,12 +90,21 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
+<<<<<<< HEAD
             VALUE "FileDescription", "myskin" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "myskin" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
             VALUE "OriginalFilename", "myskin.exe" "\0"
             VALUE "ProductName", "myskin" "\0"
+=======
+            VALUE "FileDescription", "skinscan" "\0"
+            VALUE "FileVersion", VERSION_AS_STRING "\0"
+            VALUE "InternalName", "skinscan" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
+            VALUE "OriginalFilename", "skinscan.exe" "\0"
+            VALUE "ProductName", "skinscan" "\0"
+>>>>>>> ea92882 (Nowy projket)
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
