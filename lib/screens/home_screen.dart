@@ -1,161 +1,189 @@
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
-  final Function? onThemeToggle;
+class HomeScreen extends StatefulWidget {
+  final Function onThemeToggle;
+  final FocusNode focusNode;
   
   const HomeScreen({
     super.key, 
-    this.onThemeToggle,
+    required this.onThemeToggle,
+    required this.focusNode,
   });
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    widget.focusNode.addListener(() {
+      // Notify parent widget about keyboard state changes
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final dayWidth = (screenWidth - 32) / 7; // Calculate width for each day
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: Colors.transparent,
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFFFF8DA1),  // Darker pink at top
-                    Color(0xFFFFB6C1),  // Medium pink
-                    Color(0xFFFFCCD5),  // Lighter pink at bottom
-                  ],
-                  stops: [0.0, 0.5, 1.0],
-                ),
-              ),
-            ),
-            floating: true,
-            pinned: true,
-            expandedHeight: 160,
-            centerTitle: true,
-            toolbarHeight: 80,  // Added to give more space for larger title
-            actions: [
-              IconButton(
-                icon: Icon(
-                  Theme.of(context).brightness == Brightness.dark 
-                      ? Icons.light_mode 
-                      : Icons.dark_mode,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  if (onThemeToggle != null) {
-                    onThemeToggle!();
-                  }
-                },
-              ),
-              const SizedBox(width: 8),
-            ],
-            title: const Text(
-              'SkinScan',
-              style: TextStyle(
-                fontSize: 36,  // Increased even more for visibility
-                fontWeight: FontWeight.w800,  // Made slightly bolder
-                color: Colors.white,
-                shadows: [
-                  Shadow(
-                    offset: Offset(2, 2),
-                    blurRadius: 4,
-                    color: Colors.black26,
-                  ),
-                ],
-                letterSpacing: 1.2,  // Added letter spacing for better readability
-              ),
-            ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(80),
-              child: Container(
-                height: 80,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(7, (index) {
-                    return Container(
-                      width: dayWidth - 4, // Subtract for spacing
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: index == 3 
-                              ? [
-                                  Colors.white.withOpacity(0.95),
-                                  Colors.white.withOpacity(0.7),
-                                ]
-                              : [
-                                  Colors.white.withOpacity(0.4),
-                                  Colors.white.withOpacity(0.1),
-                                ],
-                        ),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: index == 3 
-                            ? [
-                                BoxShadow(
-                                  color: Colors.white.withOpacity(0.2),
-                                  blurRadius: 8,
-                                  spreadRadius: 1,
-                                )
-                              ]
-                            : null,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            ['M', 'T', 'W', 'T', 'F', 'S', 'S'][index],
-                            style: TextStyle(
-                              color: index == 3 
-                                  ? Colors.pink[800]
-                                  : Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${index + 1}',
-                            style: TextStyle(
-                              color: index == 3 
-                                  ? Colors.pink[800]
-                                  : Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                ),
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SearchBar(
-                    hintText: 'Search products...',
-                    leading: const Icon(Icons.search),
-                    padding: const MaterialStatePropertyAll(
-                      EdgeInsets.symmetric(horizontal: 16),
-                    ),
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside the search field
+        FocusScope.of(context).unfocus();
+        widget.focusNode.unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              backgroundColor: Colors.transparent,
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFFFF8DA1),  // Darker pink at top
+                      Color(0xFFFFB6C1),  // Medium pink
+                      Color(0xFFFFCCD5),  // Lighter pink at bottom
+                    ],
+                    stops: [0.0, 0.5, 1.0],
                   ),
                 ),
-                _buildCategories(),
-                _buildRecentScans(),
+              ),
+              floating: true,
+              pinned: true,
+              expandedHeight: 160,
+              centerTitle: true,
+              toolbarHeight: 80,
+              actions: [
+                IconButton(
+                  icon: Icon(
+                    Theme.of(context).brightness == Brightness.dark 
+                        ? Icons.light_mode 
+                        : Icons.dark_mode,
+                    color: Colors.white,
+                  ),
+                  onPressed: () => widget.onThemeToggle(),
+                ),
+                const SizedBox(width: 8),
               ],
+              title: const Text(
+                'SkinScan',
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(2, 2),
+                      blurRadius: 4,
+                      color: Colors.black26,
+                    ),
+                  ],
+                  letterSpacing: 1.2,
+                ),
+              ),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(80),
+                child: Container(
+                  height: 80,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(7, (index) {
+                      return Container(
+                        width: dayWidth - 4,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: index == 3 
+                                ? [
+                                    Colors.white.withOpacity(0.95),
+                                    Colors.white.withOpacity(0.7),
+                                  ]
+                                : [
+                                    Colors.white.withOpacity(0.4),
+                                    Colors.white.withOpacity(0.1),
+                                  ],
+                          ),
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: index == 3 
+                              ? [
+                                  BoxShadow(
+                                    color: Colors.white.withOpacity(0.2),
+                                    blurRadius: 8,
+                                    spreadRadius: 1,
+                                  )
+                                ]
+                              : null,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              ['M', 'T', 'W', 'T', 'F', 'S', 'S'][index],
+                              style: TextStyle(
+                                color: index == 3 
+                                    ? Colors.pink[800]
+                                    : Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${index + 1}',
+                              style: TextStyle(
+                                color: index == 3 
+                                    ? Colors.pink[800]
+                                    : Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ],
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    TextField(
+                      focusNode: widget.focusNode,
+                      autofocus: false,
+                      decoration: InputDecoration(
+                        hintText: 'Search products...',
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.1),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildCategories(),
+                    _buildRecentScans(),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

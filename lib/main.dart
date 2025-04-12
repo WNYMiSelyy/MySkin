@@ -73,15 +73,42 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  bool _isKeyboardVisible = false;
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      if (mounted) {
+        setState(() {
+          _isKeyboardVisible = _focusNode.hasFocus;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   Future<void> _startQRScanner() async {
+    // Hide keyboard and remove focus before opening scanner
+    FocusScope.of(context).unfocus();
+    _focusNode.unfocus();
+    
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const QRScannerScreen()),
     );
     
+    // Ensure keyboard stays hidden and focus is removed after returning from scanner
+    FocusScope.of(context).unfocus();
+    _focusNode.unfocus();
+    
     if (result != null) {
-      // Handle the scanned QR code result
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Scanned: $result'),
@@ -114,12 +141,15 @@ class _MainScreenState extends State<MainScreen> {
         body: IndexedStack(
           index: _selectedIndex,
           children: [
-            HomeScreen(onThemeToggle: widget.toggleTheme),
-            const SizedBox(), // Empty widget for scan button
+            HomeScreen(
+              onThemeToggle: widget.toggleTheme,
+              focusNode: _focusNode,
+            ),
+            const SizedBox(),
             const ProfileScreen(),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: _isKeyboardVisible ? null : FloatingActionButton(
           onPressed: _startQRScanner,
           backgroundColor: Colors.white,
           child: const Icon(
