@@ -12,6 +12,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
+  // Initialize auth state
+  await FirebaseAuth.instance.authStateChanges().first;
+  
   runApp(const SkinScanApp());
 }
 
