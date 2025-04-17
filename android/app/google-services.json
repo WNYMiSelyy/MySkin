@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "235099355517",
+    "project_id": "skinoff-e3ee6",
+    "storage_bucket": "skinoff-e3ee6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:235099355517:android:f8029ee49f9704962db414",
+        "android_client_info": {
+          "package_name": "com.example.skinup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVcA4sOlmURm2LTAzlQ5b_DyNYGEcppYM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

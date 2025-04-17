@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/qr_scanner_screen.dart';
+import 'screens/login_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const SkinScanApp());
 }
 
@@ -15,7 +23,7 @@ class SkinScanApp extends StatefulWidget {
 }
 
 class _SkinScanAppState extends State<SkinScanApp> {
-  bool _isDarkMode = true;
+  bool _isDarkMode = false;
 
   void toggleTheme() {
     setState(() {
@@ -29,9 +37,22 @@ class _SkinScanAppState extends State<SkinScanApp> {
       title: 'SkinScan',
       debugShowCheckedModeBanner: false,
       theme: _isDarkMode ? _darkTheme : _lightTheme,
-      home: MainScreen(
-        toggleTheme: toggleTheme,
-        isDarkMode: _isDarkMode,
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          
+          if (snapshot.hasData) {
+            return MainScreen(
+              toggleTheme: toggleTheme,
+              isDarkMode: _isDarkMode,
+            );
+          }
+          
+          return const LoginScreen();
+        },
       ),
     );
   }
@@ -166,40 +187,46 @@ class _MainScreenState extends State<MainScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.home,
-                      color: _selectedIndex == 0 ? Colors.white : Colors.white70,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Home',
-                      style: TextStyle(
+                GestureDetector(
+                  onTap: () => setState(() => _selectedIndex = 0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.home,
                         color: _selectedIndex == 0 ? Colors.white : Colors.white70,
-                        fontSize: 11,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 2),
+                      Text(
+                        'Home',
+                        style: TextStyle(
+                          color: _selectedIndex == 0 ? Colors.white : Colors.white70,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(width: 40),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.person,
-                      color: _selectedIndex == 2 ? Colors.white : Colors.white70,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Profile',
-                      style: TextStyle(
+                GestureDetector(
+                  onTap: () => setState(() => _selectedIndex = 2),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.person,
                         color: _selectedIndex == 2 ? Colors.white : Colors.white70,
-                        fontSize: 11,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 2),
+                      Text(
+                        'Profile',
+                        style: TextStyle(
+                          color: _selectedIndex == 2 ? Colors.white : Colors.white70,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
