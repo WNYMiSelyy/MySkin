@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'skinoff-e3ee6.firebasestorage.app',
     measurementId: 'G-HHFGLBVZD4',
   );
+
 }
